@@ -23,24 +23,34 @@ class ProductResponse(BaseModel):
 class SaleCreate(BaseModel):
     date: date
     time: time
-    id_product: int
-    quantity: int
+    id_cart: int
 
     class Config:
         from_attributes = True
+
+class CartProductResponse(BaseModel):
+    id: int
+    product: ProductResponse
+    quantity: int
+
+
+class CartResponse(BaseModel):
+    id: int
+    creation_date: date
+    state: str
+    products: list[CartProductResponse]
 
 
 class SaleResponse(BaseModel):
     id: int
     date: date
     time: time
-    product: ProductResponse
-    quantity: int
+    id_cart= CartResponse
     total_price: float
 
     class Config:
         from_attributes = True
 
 
-
-
+class CartAssign(BaseModel):
+    id_cart = int

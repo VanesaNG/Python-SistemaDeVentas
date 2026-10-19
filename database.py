@@ -14,9 +14,7 @@ class Product(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
-
-    sales = relationship("Sale", back_populates="product")
-
+    carts = relationship("Cart", secondary="cart_product")
 
 
 class Sale(Base):
@@ -25,11 +23,33 @@ class Sale(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     date = Column(Date, nullable=False)
     time = Column(Time, nullable=False)
-    id_product = Column(Integer, ForeignKey("products.id"), nullable=False)
-    quantity = Column(Integer, nullable=False)
+    id_cart = Column(Integer, ForeignKey("carts.id"), unique=True, nullable=False)
     total_price = Column(Float, nullable=False)
 
-    product = relationship("Product", back_populates="sales")
+    cart = relationship("Cart", back_populates="cart")
+
+
+class Cart(Base):
+    __tablename__='carts'
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    creation_date = Column(Date, nullable=False)
+    state = Column(String, nullable=False)
+
+    sale = relationship("Sale", back_populates="cart")
+    products = relationship("Product", secondary="cart_product")
+
+
+class Cart_product(Base):
+    __tablename__="cart_product"
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    id_cart = Column(ForeignKey("carts.id") ,nullable=False)
+    id_product = Column(ForeignKey("products.id") ,nullable=False)
+    quantity = Column(Integer, nullable=False)
+
+
+
 
 
 Base.metadata.create_all(engine)
@@ -37,3 +57,10 @@ Base.metadata.create_all(engine)
 SessionLocal = sessionmaker(bind=engine)
 db_session = SessionLocal()
 
+
+
+    # id_product = Column(Integer, ForeignKey("products.id"), nullable=False)
+    # quantity = Column(Integer, nullable=False)
+
+    # sales = relationship("Sale", back_populates="product")
+    # product = relationship("Product", back_populates="sales")

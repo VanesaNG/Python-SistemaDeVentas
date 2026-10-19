@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI, status, HTTPException
-from database import db_session, Product, Sale
-from schema import ProductCreate, SaleCreate, SaleResponse, ProductResponse
+from database import db_session, Product, Sale, Cart
+from schema import ProductCreate, SaleCreate, SaleResponse, ProductResponse, CartAssign
 from sqlalchemy import Time, Date
 
 app = FastAPI()
@@ -134,10 +134,10 @@ def createSale(sale_details: SaleCreate):
         sale = Sale(
             time = sale_details.time,
             date = sale_details.date,
-            id_product = sale_details.id_product,
-            quantity = sale_details.quantity,
+            id_cart = sale_details.id_cart,
             total_price = 0
         )
+
         db_session.add(sale)
         db_session.commit()
         db_session.refresh(sale)
@@ -231,6 +231,40 @@ def deleteSale(sale_id:int):
 
 
 
+ #######REVISAAAAAAAAAAAAAAAAARR####### 1
+
+    # ENDPOINT QUE LE ASIGNA O REEMPLAZA UN CARRITO DE UNA VENTA
+
+@app.post("/sale/{sale_id}/cart", status_code=status.HTTP_200_OK, response_model=SaleResponse)
+def assignCart(sale_id:int, cart_details:CartAssign):
+    try:
+        cart = db_session.query(Cart).filter( Cart.id == cart_details.id_cart).first()
+
+        if cart.sale is not None:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="El carrito ya está asociado a una venta")
+
+        sale = db_session.query(Sale).filter( Sale.id == sale_id ).first()
+
+        sale.id_cart = cart_details.id_cart
+
+        db_session.commit()
+        db_session.refresh(sale)
+
+    except HTTPException:
+        raise
+
+
+    except Exception as e:
+        db_session.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=f"No se pudo asignar el carrito a la venta. Error: {e}")
+
+    return sale
+
+
+
+    
 
 
 
