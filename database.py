@@ -39,6 +39,8 @@ class Cart(Base):
     sale = relationship("Sale", back_populates="cart")
     products = relationship("Product", secondary="cart_product")
 
+    # la relacion de products debería ser con la tabla intermecia no Product
+
 
 class Cart_product(Base):
     __tablename__="cart_product"
@@ -47,6 +49,10 @@ class Cart_product(Base):
     id_cart = Column(ForeignKey("carts.id") ,nullable=False)
     id_product = Column(ForeignKey("products.id") ,nullable=False)
     quantity = Column(Integer, nullable=False)
+
+
+
+    #agregar carrito y producto .. las relaciones en cart product
 
 
 

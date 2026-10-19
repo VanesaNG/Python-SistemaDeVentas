@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI, status, HTTPException
 from database import db_session, Product, Sale, Cart
-from schema import ProductCreate, SaleCreate, SaleResponse, ProductResponse, CartAssign
+from schema import ProductCreate, SaleCreate, SaleResponse, ProductResponse, CartAssign, CartResponse, CartCreate
 from sqlalchemy import Time, Date
 
 app = FastAPI()
@@ -262,7 +262,35 @@ def assignCart(sale_id:int, cart_details:CartAssign):
 
     return sale
 
+    # POST /carritos
+    # ENDPOINT QUE CREA UN CARRITO
+@app.post("/cart", status_code=status.HTTP_200_OK, response_model=CartResponse)
+def createCart(cart_details:CartCreate):
 
+    try:
+        cart = Cart (
+            creation_date = cart_details.creation_date,
+            state = cart_details.state
+        )
+
+        db_session.add(Cart)
+        db_session.commit()
+
+    except Exception as e:
+        db_session.rollback()
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=f"Error al crear carrito: {e}")
+
+    return cart
+
+
+
+    # GET /carritos
+    # GET /carritos/{id}
+    # PUT /carritos/{id}
+    # DELETE /carritos/{id}
+    # POST /carritos/{id}/productos
+    # DELETE /carritos/{id}/productos/{id_producto}
 
     
 

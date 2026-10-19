@@ -34,6 +34,11 @@ class CartProductResponse(BaseModel):
     quantity: int
 
 
+class CartCreate(BaseModel):
+    creation_date: date
+    state: str
+
+
 class CartResponse(BaseModel):
     id: int
     creation_date: date
@@ -45,7 +50,7 @@ class SaleResponse(BaseModel):
     id: int
     date: date
     time: time
-    id_cart= CartResponse
+    id_cart: CartResponse
     total_price: float
 
     class Config:
@@ -53,4 +58,4 @@ class SaleResponse(BaseModel):
 
 
 class CartAssign(BaseModel):
-    id_cart = int
+    id_cart: int
