@@ -14,7 +14,8 @@ class Product(Base):
     id = Column(Integer, primary_key=True, nullable=False)
     name = Column(String, nullable=False)
     price = Column(Float, nullable=False)
-    carts = relationship("Cart", secondary="cart_product")
+
+    cart_product = relationship("Cart_product", back_populates="product")
 
 
 class Sale(Base):
@@ -26,7 +27,7 @@ class Sale(Base):
     id_cart = Column(Integer, ForeignKey("carts.id"), unique=True, nullable=False)
     total_price = Column(Float, nullable=False)
 
-    cart = relationship("Cart", back_populates="cart")
+    cart = relationship("Cart", back_populates="sale")
 
 
 class Cart(Base):
@@ -36,10 +37,8 @@ class Cart(Base):
     creation_date = Column(Date, nullable=False)
     state = Column(String, nullable=False)
 
-    sale = relationship("Sale", back_populates="cart")
-    products = relationship("Product", secondary="cart_product")
-
-    # la relacion de products debería ser con la tabla intermecia no Product
+    sale = relationship("Sale", back_populates="cart", uselist=False)
+    products = relationship("Cart_product", back_populates="cart")
 
 
 class Cart_product(Base):
@@ -50,11 +49,8 @@ class Cart_product(Base):
     id_product = Column(ForeignKey("products.id") ,nullable=False)
     quantity = Column(Integer, nullable=False)
 
-
-
-    #agregar carrito y producto .. las relaciones en cart product
-
-
+    cart = relationship("Cart", back_populates="products")
+    product = relationship("Product", back_populates="cart_product")
 
 
 
@@ -62,11 +58,3 @@ Base.metadata.create_all(engine)
 
 SessionLocal = sessionmaker(bind=engine)
 db_session = SessionLocal()
-
-
-
-    # id_product = Column(Integer, ForeignKey("products.id"), nullable=False)
-    # quantity = Column(Integer, nullable=False)
-
-    # sales = relationship("Sale", back_populates="product")
-    # product = relationship("Product", back_populates="sales")

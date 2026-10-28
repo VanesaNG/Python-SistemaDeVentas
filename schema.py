@@ -1,7 +1,7 @@
 # FastAPI usa tipado en lo que es la respuesta y los modelos de datos 
 # Yo le tengo que decir a cada endpoint que es lo que va a estar recibiendo y que es lo que va a estar devolviendo
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import date, time
 
 class ProductCreate(BaseModel):
@@ -10,6 +10,11 @@ class ProductCreate(BaseModel):
 
     class Config:
         from_attributes = True
+
+# Pydantic espera normalmente recibir un diccionario
+# CLASS CONFIG le dice a pydantic
+# Podés crear este esquema a partir de los atributos de un objeto Python/SQLAlchemy.
+# Porque SQLAlchemy te responde con un objeto
 
 
 class ProductResponse(BaseModel):
@@ -45,13 +50,16 @@ class CartResponse(BaseModel):
     state: str
     products: list[CartProductResponse]
 
+    class Config:
+        from_attributes = True
+
 
 class SaleResponse(BaseModel):
     id: int
     date: date
     time: time
-    id_cart: CartResponse
     total_price: float
+    cart: CartResponse
 
     class Config:
         from_attributes = True
@@ -59,3 +67,8 @@ class SaleResponse(BaseModel):
 
 class CartAssign(BaseModel):
     id_cart: int
+
+
+class addProduct(BaseModel):
+    id_product: int
+    quantity: int = Field(gt=0)
